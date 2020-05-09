@@ -71,8 +71,9 @@ Stocks = []
 
 #########################################################################
 """ 宇順專用 """
-Oppt_val = 1.6
-Risk_val = 2.6
+#Thold: Threshold
+OpptThold = 1.6
+RiskThold = 2.6
 n1 = 3
 n2 = 6
 MA1 = MA(n1)
@@ -88,8 +89,8 @@ print(PriceWay)
 
 
 
-Oppt_val = Decimal(str(Oppt_val))
-Risk_val = Decimal(str(Risk_val))
+OpptThold = Decimal(str(OpptThold))
+RiskThold = Decimal(str(RiskThold))
 
 for i in range(n2+1, len(MA1)):
     if sell_OB or buy_OB:
@@ -128,7 +129,7 @@ for i in range(n2+1, len(MA1)):
                 buy_OB = False
             else:
                 print("**** 觀察價 低於 當日最低價，不執行買入 **** 價格:", buyInPrice, Low[i])
-        if Risk > Risk_val:
+        if Risk > RiskThold:
             buy_OB = False
             print("======== BUY IN OB 信心不足 ========")
             print("風險, 機會",float(Risk), float(Oppt))
@@ -136,7 +137,7 @@ for i in range(n2+1, len(MA1)):
             buy_OB = False
             print("======== 觀察信心不足 BUY IN OB MA1 低於 MA2 ========")
             print("風險, 機會",float(Risk), float(Oppt))
-        if Oppt >= Oppt_val and Risk < Risk_val:
+        if Oppt >= OpptThold and Risk < RiskThold:
             buyInReady = True
             print("!!!===== 明天掛單買入 =====!!!")
 
@@ -174,11 +175,11 @@ for i in range(n2+1, len(MA1)):
                 sell_OB = False
             else:
                 print("**** 沒人要用這個價格買:", sellOutPrice, High[i])
-        if Risk > Risk_val or MA1[i] > MA2[i]:
+        if Risk > RiskThold or MA1[i] > MA2[i]:
             sell_OB = False
             print("======== 觀察信心不足 SELL OUT OB 信心不足 ========")
             print("風險, 機會",float(Risk), float(Oppt))
-        if Oppt >= Oppt_val and Risk < Risk_val:
+        if Oppt >= OpptThold and Risk < RiskThold:
             sellOutReady = True
             print("!!!==== 明天掛賣一波 =====!!!")
             
@@ -191,7 +192,6 @@ for i in range(n2+1, len(MA1)):
             Risk = 0
             Oppt = 0
             buyInReady = False
-            
             buyInPrice = Decimal(str(PriceWay[i]))
             print("---=== 執行BUY OB 觀察日 ===---")
 
