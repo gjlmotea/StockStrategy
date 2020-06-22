@@ -62,7 +62,7 @@ def saveToCsv(json, outputFileName):
     fields = json['fields']
     data = json['data']
     notes = json['notes']
-    with open(outputFileName + '.csv', 'w', newline='') as csvfile:
+    with open(dataPath + outputFileName + '.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(title)
         writer.writerow(fields)
@@ -73,25 +73,57 @@ def saveToCsv(json, outputFileName):
             writer.writerow([notes[i]])
 
 
-for year in range(getYear(dateStart), getYear(dateEnd)+1):
-    month = 1
-    monthUpper = 12
-    if year == getYear(dateEnd):
-        monthUpper = getMonth(dateEnd)
-    if year == getYear(dateStart):
-        month = getMonth(dateStart)
+def createDirectory(dataPath):
+    import os
+    try:
+        os.mkdir(dataPath)
+    except OSError:
+        print("資料夾已存在。")
+    except Exception:
+        print("路徑有誤...")
+    else:
+        print("成功建立" + dataPath +"資料夾。")
 
-    while month <= monthUpper:
-        res = getResponse(year, dateToStr(month))
-        if res.status_code != 200:
-            print("與網站的連線出現錯誤...", "該資料日期:", year, month)
-            continue
-        json = res.json()
-        if json['stat'] != 'OK':
-            print("無法成功抓取資料!! :", json['stat'], "該資料日期:", year, month)
-        outputFileName = "STOCK_DAY" + str(year) + dateToStr(month)
-        saveToCsv(json, outputFileName)
-        time.sleep(2.5)
-        month += 1
+def deleteDirectory(dataPath):
+    import shutil
+    while True:
+        try:
+            shutil.rmtree(dataPath)
+        except OSError:
+            print("找不到" + dataPath + "目的資料夾。")
+            break
+        except IOError:
+            print("請先關閉所有" + dataPath + "資料夾底下的檔案。")
+            time.sleep(3)
+        except Exception:
+            print("發生其他未知錯誤。")
+        else:
+            print("已清除" + dataPath + "資料夾及底下的所有檔案。")
+            break
+
+if __name__ == '__main__':
+    dataPath = "./data/"
+    deleteDirectory(dataPath)
+    createDirectory(dataPath)
+    for year in range(getYear(dateStart), getYear(dateEnd)+1):
+        month = 1
+        monthUpper = 12
+        if year == getYear(dateEnd):
+            monthUpper = getMonth(dateEnd)
+        if year == getYear(dateStart):
+            month = getMonth(dateStart)
+
+        while month <= monthUpper:
+            res = getResponse(year, dateToStr(month))
+            if res.status_code != 200:
+                print("與網站的連線出現錯誤...", "該資料日期:", year, month)
+                continue
+            json = res.json()
+            if json['stat'] != 'OK':
+                print("無法成功抓取資料!! :", json['stat'], "該資料日期:", year, month)
+            outputFileName = "STOCK_DAY" + str(year) + dateToStr(month)
+            saveToCsv(json, outputFileName)
+            time.sleep(2.5)
+            month += 1
 
 #print(getResponse())
