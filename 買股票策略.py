@@ -213,5 +213,7 @@ print("手上的股票有：", len(Stocks)," 張，分別為：", end='')
 for Stock in sorted(Stocks):
     print(Stock, end=', ')
 print()
+print("總賣出價錢", Cost + Profit)
 print("獲利：", Profit)
-print("成本：", Cost)
+print("成本(總賣出價錢 - 獲利)：", Cost)
+
